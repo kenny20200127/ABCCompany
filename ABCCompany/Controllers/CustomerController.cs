@@ -13,6 +13,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using System.Configuration;
 using Microsoft.Data.SqlClient;
 using System.Data;
+using Microsoft.AspNetCore.Routing;
 
 namespace ABCCompany.Controllers
 {
@@ -87,9 +88,12 @@ namespace ABCCompany.Controllers
                             cmd.Parameters.Add(new SqlParameter("@country", customer.Country));
                             cmd.Parameters.Add(new SqlParameter("@state", customer.State));
                             cmd.Parameters.Add(new SqlParameter("@city", customer.City));
-                            cmd.Parameters.Add(new SqlParameter("@product", customer.Product));
+                            cmd.Parameters.Add(new SqlParameter("@productid", customer.Product));
                             cmd.Parameters.Add(new SqlParameter("@quantity", customer.Quntity));
+                            cmd.Parameters.Add(new SqlParameter("@dateofsales", customer.DateOfSales));
                             
+
+
                             cmd.Parameters.Add("@message", SqlDbType.Char, 500);
                             cmd.Parameters["@message"].Direction = ParameterDirection.Output;
 
@@ -106,7 +110,14 @@ namespace ABCCompany.Controllers
             }
             catch(Exception ex)
             {
-                return RedirectToAction("Error/"+ex.Message);
+               // return RedirectToAction("Error/"+ex.Message);
+                return RedirectToAction("Error", new RouteValueDictionary(
+                      new
+                      {
+                          controller = "Customer",
+                          action = "Error",
+                          errormessage = ex.Message
+                      }));
             }
         }
 
@@ -162,8 +173,25 @@ namespace ABCCompany.Controllers
             return Json(new SelectList(city, "CityCode", "CityName"));
         }
 
-        public ActionResult Error(string errormessage)
+        public async Task<ActionResult> Error(string errormessage)
         {
+            using (SqlConnection sqls = new SqlConnection(_connectionstring))
+            {
+                using (SqlCommand cmd = new SqlCommand("captureException", sqls))
+                {
+                    cmd.CommandTimeout = 1200;
+                    cmd.CommandType = System.Data.CommandType.StoredProcedure;
+                    cmd.Parameters.Add(new SqlParameter("@errormessage",errormessage));
+
+                    cmd.Parameters.Add("@message", SqlDbType.Char, 500);
+                    cmd.Parameters["@message"].Direction = ParameterDirection.Output;
+
+                    await sqls.OpenAsync();
+                    await cmd.ExecuteNonQueryAsync();
+
+
+                }
+            }
             return View();
         }
         // GET: CustomerController/Edit/5
