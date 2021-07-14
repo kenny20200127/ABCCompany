@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Microsoft.Extensions.Configuration;
 using System.Linq;
 using System.Threading.Tasks;
 using ABCCompany.Data;
@@ -9,6 +10,9 @@ using ABCCompany.Services;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using System.Configuration;
+using Microsoft.Data.SqlClient;
+using System.Data;
 
 namespace ABCCompany.Controllers
 {
@@ -16,10 +20,13 @@ namespace ABCCompany.Controllers
     {
         private readonly ApplicationDBContext _context;
         private readonly ICustomerService _customerservice;
-        public CustomerController(ApplicationDBContext context, ICustomerService customerservice)
+        private readonly string _connectionstring;
+        public CustomerController(ApplicationDBContext context, ICustomerService customerservice,IConfiguration configuration)
         {
             this._context = context;
             _customerservice = customerservice;
+
+        _connectionstring = configuration.GetConnectionString("DefaultConnection");
         }
         // GET: CustomerController
         public ActionResult Index()
@@ -66,11 +73,35 @@ namespace ABCCompany.Controllers
             {
                 if (ModelState.IsValid)
                 {
-                   await _customerservice.CreateAsync(customer);
+
+                    using (SqlConnection sqls = new SqlConnection(_connectionstring))
+                    {
+                        using (SqlCommand cmd = new SqlCommand("createCustomer", sqls))
+                        {
+                            cmd.CommandTimeout = 1200;
+                            cmd.CommandType = System.Data.CommandType.StoredProcedure;
+                            cmd.Parameters.Add(new SqlParameter("@customername", customer.CustomerName));
+                            cmd.Parameters.Add(new SqlParameter("@country", customer.Country));
+                            cmd.Parameters.Add(new SqlParameter("@state", customer.State));
+                            cmd.Parameters.Add(new SqlParameter("@city", customer.City));
+                            cmd.Parameters.Add(new SqlParameter("@product", customer.Product));
+                            cmd.Parameters.Add(new SqlParameter("@quantity", customer.Quntity));
+                            
+                            cmd.Parameters.Add("@message", SqlDbType.Char, 500);
+                            cmd.Parameters["@message"].Direction = ParameterDirection.Output;
+
+                            await sqls.OpenAsync();
+                            await cmd.ExecuteNonQueryAsync();
+
+
+                        }
+                    }
+
+                    await _customerservice.CreateAsync(customer);
                 }
                 return RedirectToAction(nameof(Index));
             }
-            catch
+            catch(Exception ex)
             {
                 return View();
             }
