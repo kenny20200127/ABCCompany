@@ -1,0 +1,111 @@
+﻿@model ABCCompany.Entities.CustomerTb
+
+@{
+    ViewData["Title"] = "Create";
+}
+
+<h1>Create</h1>
+
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="Create">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group">
+                <label asp-for="CustomerName" class="control-label"></label>
+                <input asp-for="CustomerName" class="form-control" />
+                <span asp-validation-for="CustomerName" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Country" class="control-label"></label>
+                <select asp-for="Country" 
+                        class="form-control" id="CountryCode" name="Country"
+                        asp-items="@(new SelectList(ViewBag.CountryList,"Value", "Text"))">
+                </select>
+                <span asp-validation-for="Country" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="State" class="control-label"></label>
+                 <select asp-for="State" id="RegionId" name="State"
+                        class="form-control"
+                        asp-items="@(new SelectList(string.Empty,"RegionCode","RegionName"))">
+                </select>
+                <span asp-validation-for="State" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="City" class="control-label"></label>
+                     <select asp-for="State" id="CityId" name="City"
+                        class="form-control"
+                        asp-items="@(new SelectList(string.Empty,"CityCode","CityName"))">
+                </select>
+                <span asp-validation-for="City" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="DateOfSales" class="control-label"></label>
+                <input asp-for="DateOfSales" class="form-control" />
+                <span asp-validation-for="DateOfSales" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Product" class="control-label"></label>
+                <select asp-for="Product"
+                        class="form-control"
+                        asp-items="@(new SelectList(ViewBag.ProductList,"Value", "Text"))">
+                </select>
+                <span asp-validation-for="Product" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Quntity" class="control-label"></label>
+                <input asp-for="Quntity" class="form-control" />
+                <span asp-validation-for="Quntity" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Create" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-action="Index">Back to List</a>
+</div>
+<script src="~/lib/jquery/dist/jquery.js"></script>
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}
+<script type="text/javascript">
+    $(document).ready(function () {
+        var items = "<option value='0'>Select</option>";
+        $('#RegionId').html(items);
+        $('#CityId').html(items);
+    });
+</script>
+<script type="text/javascript">
+    $(document).ready(function () {
+        $('#CountryCode').change(function () {
+            
+            var Url = '@Url.Content("~/")' + "Customer/GetRegion";
+            var ddlvalue = "#CountryCode";
+            $.getJSON(Url, { CountryCode: $(ddlvalue).val() }, function (data) {
+                var items = ""
+                $("RegionId").empty();
+                $.each(data, function (i, region) {
+                    items += "<option value='" + region.value + "'>" + region.text + "</option>";
+                });
+                $("#RegionId").html(items);
+           });
+        });
+    
+        $('#RegionId').change(function () {
+                  var Url = '@Url.Content("~/")' + "Customer/GetCity";
+                  var ddlvalue = "#RegionId";
+                  $.getJSON(Url, { RegionId: $(ddlvalue).val() }, function (data) {
+                var items = ""
+                      $("#CityId").empty();
+                $.each(data, function (i, region) {
+                    items += "<option value='" + region.value + "'>" + region.text + "</option>";
+                });
+                      $("#CityId").html(items);
+           });
+              });
+    });
+</script>

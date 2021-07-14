@@ -1,0 +1,133 @@
+﻿@model PaginatedList<ABCCompany.Models.CustomerModel>
+
+@{
+    ViewData["Title"] = "GetCustomers";
+}
+
+<h1>GetCustomers</h1>
+@using (Html.BeginForm("GetCustomers", "Customer", FormMethod.Get))
+{
+    <div class="row">
+        <div class="col-md-3">
+            <div class="form-group">
+                <label class="control-label">Date Of Sales</label>
+                <input type="text" name="DateOfSales" class="form-control" />
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="form-group">
+                <label class="control-label">Country</label>
+                <select class="form-control" id="CountryCode" name="Country"
+                        asp-items="@(new SelectList(ViewBag.CountryList,"Value", "Text"))">
+                </select>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="form-group">
+                <label class="control-label">State/Region</label>
+                <select id="RegionId" name="State"
+                        class="form-control"
+                        asp-items="@(new SelectList(string.Empty,"RegionCode","RegionName"))">
+                </select>
+
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="form-group">
+                <label class="control-label"></label>
+                <select id="CityId" name="City"
+                        class="form-control"
+                        asp-items="@(new SelectList(string.Empty,"CityCode","CityName"))">
+                </select>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="form-group">
+                <input type="submit" value="Process" class="btn btn-primary" />
+            </div>
+        </div>
+    </div>
+}
+<table class="table">
+    <thead>
+        <tr>
+            <th>Customer Name</th>
+            <th>Country</th>
+            <th>State/Region</th>
+            <th>City</th>
+            <th>DateOfSales</th>
+            <th>Product</th>
+            <th>Price</th>
+            <th>Quntity</th>
+            <th></th>
+        </tr>
+    </thead>
+    <hr />
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>@item.CustomerName</td>
+                <td>@item.CountryName</td>
+                <td>@item.StateName</td>
+                <td> @item.CityName </td>
+                <td>@item.DateOfSales.Date</td>
+                <td>@item.ProductName</td>
+                <td>@item.ProductPrice</td>
+                <td>@item.Quntity</td>
+                <td>
+                    <a asp-action="Edit" asp-route-id="@item.CustomerId">Edit</a> |
+                    <a asp-action="Details" asp-route-id="@item.CustomerId">Details</a> |
+                    <a asp-action="Delete" asp-route-id="@item.CustomerId">Delete</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+@{ var prevDisabled = !Model.PreviousPage ? "disabled" : "";
+                var nextDisabled = !Model.Nextpage ? "disabled" : ""; }
+
+<a asp-action="GetCustomers"
+   asp-route-pageNumber="@(Model.PageIndex-1)" 
+   class="btn btn-default  @prevDisabled">previous</a>
+
+<a asp-action="GetCustomers" asp-route-pageNumber="@(Model.PageIndex+1)"  class="btn btn-default  @nextDisabled">next</a>
+
+<script src="~/lib/jquery/dist/jquery.js"></script>
+<script type="text/javascript">
+    $(document).ready(function () {
+        var items = "<option value='0'>Select</option>";
+        $('#RegionId').html(items);
+        $('#CityId').html(items);
+    });
+</script>
+<script type="text/javascript">
+    $(document).ready(function () {
+        $('#CountryCode').change(function () {
+
+            var Url = '@Url.Content("~/")' + "Customer/GetRegion";
+            var ddlvalue = "#CountryCode";
+            $.getJSON(Url, { CountryCode: $(ddlvalue).val() }, function (data) {
+                var items = ""
+                $("RegionId").empty();
+                $.each(data, function (i, region) {
+                    items += "<option value='" + region.value + "'>" + region.text + "</option>";
+                });
+                $("#RegionId").html(items);
+           });
+        });
+
+        $('#RegionId').change(function () {
+                  var Url = '@Url.Content("~/")' + "Customer/GetCity";
+                  var ddlvalue = "#RegionId";
+                  $.getJSON(Url, { RegionId: $(ddlvalue).val() }, function (data) {
+                var items = ""
+                      $("#CityId").empty();
+                $.each(data, function (i, region) {
+                    items += "<option value='" + region.value + "'>" + region.text + "</option>";
+                });
+                      $("#CityId").html(items);
+           });
+              });
+    });
+</script>
