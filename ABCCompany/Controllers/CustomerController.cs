@@ -69,6 +69,9 @@ namespace ABCCompany.Controllers
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> Create(CustomerTb customer)
         {
+            ViewBag.ProductList = GetProduct();
+
+            ViewBag.CountryList = GetCountry();
             try
             {
                 if (ModelState.IsValid)
@@ -103,7 +106,7 @@ namespace ABCCompany.Controllers
             }
             catch(Exception ex)
             {
-                return View();
+                return RedirectToAction("Error/"+ex.Message);
             }
         }
 
@@ -158,8 +161,11 @@ namespace ABCCompany.Controllers
             city.Insert(0, new Master_City { CityCode = 0, CityName = "select City" });
             return Json(new SelectList(city, "CityCode", "CityName"));
         }
-       
 
+        public ActionResult Error(string errormessage)
+        {
+            return View();
+        }
         // GET: CustomerController/Edit/5
         public ActionResult Edit(int id)
         {
