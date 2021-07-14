@@ -9,12 +9,9 @@ namespace ABCCompany.Services
 {
     public interface ICustomerService
     {
-        Task CreateAsync(CustomerTb customer);
-        CustomerTb GetByCustomer(string customer);
-        Task UpdateAsync(CustomerTb customer);
-        Task UpdateAsync(string customer);
-        Task<IEnumerable<CustomerTb>> GetAll();
+
         List<CustomerModel> GetCustomerByFilter(CustomerFilter customerFilter);
-        Task DeleteAsync(string customer);
+        List<CustomerModel> GetCustomer();
+ 
     }
 }

@@ -47,5 +47,28 @@ namespace ABCCompany.Repository
                     }).ToList();
             return result;
         }
+        public List<CustomerModel> GetCustomer()
+        {
+            var result = (from customer in context.CustomerTbs
+                          join product in context.Master_Product on customer.Product equals product.ProductId.ToString()
+                          join country in context.Master_Country on customer.Country equals country.CountryCode
+                          join state in context.Master_Region on customer.State equals state.RegionCode
+                          join city in context.Master_City on customer.City equals city.CityCode.ToString()
+                          where customer.DateOfSales.Date==DateTime.Now.Date
+                          select new CustomerModel
+                          {
+                              CustomerName = customer.CustomerName,
+                              CountryName = country.CountryName,
+                              StateName = state.RegionName,
+                              CityName = city.CityName,
+                              DateOfSales = customer.DateOfSales,
+                              ProductName = product.ProductName,
+                              ProductPrice = Convert.ToDouble(product.Price),
+                              Quntity = customer.Quntity
+
+
+                          }).ToList();
+            return result;
+        }
     }
 }

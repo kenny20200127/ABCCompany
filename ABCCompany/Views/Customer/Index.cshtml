@@ -1,0 +1,42 @@
+﻿@model List<ABCCompany.Models.CustomerModel>
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h1>List Of Item Sold Today</h1>
+<table class="table">
+    <thead>
+        <tr>
+            <th>Customer Name</th>
+            <th>Country</th>
+            <th>State/Region</th>
+            <th>City</th>
+            <th>DateOfSales</th>
+            <th>Product</th>
+            <th>Price</th>
+            <th>Quntity</th>
+            <th></th>
+        </tr>
+    </thead>
+    <hr />
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>@item.CustomerName</td>
+                <td>@item.CountryName</td>
+                <td>@item.StateName</td>
+                <td> @item.CityName </td>
+                <td>@item.DateOfSales.Date</td>
+                <td>@item.ProductName</td>
+                <td>@item.ProductPrice</td>
+                <td>@item.Quntity</td>
+                <td>
+                    <a asp-action="Edit" asp-route-id="@item.CustomerId">Edit</a> |
+                    <a asp-action="Details" asp-route-id="@item.CustomerId">Details</a> |
+                    <a asp-action="Delete" asp-route-id="@item.CustomerId">Delete</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

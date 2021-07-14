@@ -31,8 +31,8 @@ namespace ABCCompany.Controllers
         // GET: CustomerController
         public ActionResult Index()
         {
-
-            return View();
+            var customerlist = _customerservice.GetCustomer();
+            return View(customerlist);
         }
         public ActionResult GetGustomerByProduct(int customerid,DateTime DateOfSales)
         {
@@ -97,9 +97,9 @@ namespace ABCCompany.Controllers
                         }
                     }
 
-                    await _customerservice.CreateAsync(customer);
+                    //await _customerservice.CreateAsync(customer);
                 }
-                return RedirectToAction(nameof(Index));
+                return RedirectToAction("Index");
             }
             catch(Exception ex)
             {

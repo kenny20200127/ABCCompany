@@ -10,5 +10,6 @@ namespace ABCCompany.Repository
     public interface ICustomerRepo: IGenericRepo<CustomerTb>
     {
        List<CustomerModel> GetCustomerByFilter(CustomerFilter customerFilter);
+        List<CustomerModel> GetCustomer();
     }
 }
