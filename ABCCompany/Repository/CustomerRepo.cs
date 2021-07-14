@@ -40,7 +40,7 @@ namespace ABCCompany.Repository
                         CityName=city.CityName,
                         DateOfSales=customer.DateOfSales,
                         ProductName=product.ProductName,
-                        ProductPrice=Convert.ToDouble(product.Price),
+                        ProductPrice= customer.Quntity * Convert.ToDouble(product.Price),
                         Quntity=customer.Quntity
 
 
@@ -54,7 +54,7 @@ namespace ABCCompany.Repository
                           join country in context.Master_Country on customer.Country equals country.CountryCode
                           join state in context.Master_Region on customer.State equals state.RegionCode
                           join city in context.Master_City on customer.City equals city.CityCode.ToString()
-                          where customer.DateOfSales.Date==DateTime.Now.Date
+                          where customer.datecreated.Date==DateTime.Now.Date
                           select new CustomerModel
                           {
                               CustomerName = customer.CustomerName,
@@ -63,7 +63,7 @@ namespace ABCCompany.Repository
                               CityName = city.CityName,
                               DateOfSales = customer.DateOfSales,
                               ProductName = product.ProductName,
-                              ProductPrice = Convert.ToDouble(product.Price),
+                              ProductPrice = customer.Quntity * Convert.ToDouble(product.Price),
                               Quntity = customer.Quntity
 
 

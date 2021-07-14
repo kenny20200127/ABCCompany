@@ -17,5 +17,6 @@ namespace ABCCompany.Entities
         public DateTime DateOfSales { get; set; }
         public string Product { get; set; }
         public int Quntity { get; set; }
+        public DateTime datecreated { get; set; }
     }
 }
