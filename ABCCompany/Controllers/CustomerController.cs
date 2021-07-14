@@ -26,7 +26,7 @@ namespace ABCCompany.Controllers
             this._context = context;
             _customerservice = customerservice;
 
-        _connectionstring = configuration.GetConnectionString("DefaultConnection");
+        _connectionstring = configuration.GetConnectionString("DefaultDbConnection");
         }
         // GET: CustomerController
         public ActionResult Index()
